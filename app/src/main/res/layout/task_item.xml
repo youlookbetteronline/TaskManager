@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="?android:attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -23,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/priority_marker"
-        android:textSize="28sp"
+        android:textSize="36sp"
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         />
