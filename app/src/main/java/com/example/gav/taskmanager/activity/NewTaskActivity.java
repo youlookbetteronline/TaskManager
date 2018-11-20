@@ -1,4 +1,4 @@
-package com.example.gav.taskmanager;
+package com.example.gav.taskmanager.activity;
 
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
@@ -9,15 +9,14 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.gav.taskmanager.R;
 
 public class NewTaskActivity extends AppCompatActivity {
 

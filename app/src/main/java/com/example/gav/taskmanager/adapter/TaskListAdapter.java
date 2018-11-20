@@ -17,7 +17,7 @@ import java.util.Collection;
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskListViewHolder>{
     public ArrayList<Task> taskList = new ArrayList<>();
     private final OnTaskClickListener listener;
-    private Context context;
+    private final Context context;
 
     public TaskListAdapter(Context context, ArrayList<Task> taskList, OnTaskClickListener listener) {
         this.context = context;
@@ -29,7 +29,13 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     @Override
     public TaskListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(context).inflate(R.layout.task_item, viewGroup, false);
-        TaskListViewHolder taskListViewHolder = new TaskListViewHolder(view);
+        final TaskListViewHolder taskListViewHolder = new TaskListViewHolder(view);
+        taskListViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (taskListViewHolder.getAdapterPosition() != RecyclerView.NO_POSITION)
+                    listener.onTaskClick(taskListViewHolder.getAdapterPosition());
+            }
+        });
         return taskListViewHolder;
     }
 
@@ -66,12 +72,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         public void bind(final Task task, final OnTaskClickListener listener) {
             tvTitle.setText(task.getText());
             tvMarker.setTextColor(task.getPriority());
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    listener.onTaskClick(getAdapterPosition());
-                }
-            });
         }
     }
 

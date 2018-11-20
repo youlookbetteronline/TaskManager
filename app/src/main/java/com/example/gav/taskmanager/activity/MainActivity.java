@@ -1,4 +1,4 @@
-package com.example.gav.taskmanager;
+package com.example.gav.taskmanager.activity;
 
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import com.example.gav.taskmanager.R;
 import com.example.gav.taskmanager.adapter.TaskListAdapter;
 import com.example.gav.taskmanager.pojo.Task;
 
