@@ -1,23 +1,16 @@
 package com.example.gav.taskmanager.activity;
 
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.gav.taskmanager.R;
-import com.example.gav.taskmanager.adapter.TaskListAdapter;
-import com.example.gav.taskmanager.pojo.Task;
-
-import java.util.ArrayList;
+import com.example.gav.taskmanager.adapter.TaskListFragmentAdapter;
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView rvTasks;
-    private TaskListAdapter taskAdapter;
+    private TabLayout tlTabs;
+    private ViewPager vpTabs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,36 +18,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initViews();
-        //setTasksToAdapter();
+        initFragment();
     }
 
     private void initViews() {
-        rvTasks = findViewById(R.id.rvTasks);
+        vpTabs = findViewById(R.id.vpTabs);
+        tlTabs = findViewById(R.id.tlTabs);
 
-        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        rvTasks.setLayoutManager(layoutManager);
-        taskAdapter = new TaskListAdapter(this, getTasks(), new TaskListAdapter.OnTaskClickListener() {
-            @Override public void onTaskClick(int index) {
-                //Toast.makeText(MainActivity.this, "Item Clicked", Toast.LENGTH_LONG).show();
-                RecyclerView.ViewHolder viewHolderForAdapterPosition = rvTasks.findViewHolderForAdapterPosition(index);
-                //viewHolderForAdapterPosition.itemView.setBackgroundColor(0xFF000fff);
-            }
-        });
-        rvTasks.setAdapter(taskAdapter);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvTasks.getContext(),
-                ((LinearLayoutManager) layoutManager).getOrientation());
-        rvTasks.addItemDecoration(dividerItemDecoration);
+        vpTabs.setAdapter(new TaskListFragmentAdapter(getSupportFragmentManager(), this));
+        tlTabs.setupWithViewPager(vpTabs);
     }
 
-    private void setTasksToAdapter() {
-        taskAdapter.setItems(getTasks());
-    }
-
-    private ArrayList<Task> getTasks() {
-        ArrayList<Task> result = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            result.add(new Task("Выполнить задание №" + i, 0xffffff/(i+1)*10000));
-        }
-        return result;
+    private void initFragment() {
     }
 }

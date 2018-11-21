@@ -41,7 +41,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 
     @Override
     public void onBindViewHolder(@NonNull TaskListViewHolder taskListViewHolder, int i) {
-        taskListViewHolder.bind(taskList.get(i), listener);
+        if (i != RecyclerView.NO_POSITION)
+            taskListViewHolder.bind(taskList.get(i), listener);
     }
 
     @Override

@@ -14,7 +14,7 @@
         android:layout_height="72dp"
         tools:text="Text, this is text, gav gav"
         android:fontFamily="sans-serif"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:textColor="@color/black"
         android:paddingTop="24dp"
         android:paddingLeft="16dp"/>
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/priority_marker"
-        android:textSize="36sp"
+        android:textSize="40sp"
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         />
