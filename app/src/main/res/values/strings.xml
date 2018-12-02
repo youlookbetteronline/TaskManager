@@ -16,4 +16,10 @@
     <string name="already_task_done">You have already done everything today.</string>
     <string name="enjoy_free_time">Enjoy your free time.</string>
     <string name="write_to_developer">Write to developer</string>
+    <string-array name="priority_title_list">
+        <item>Simple</item>
+        <item>Important</item>
+        <item>Very important</item>
+        <item>Urgent</item>
+    </string-array>
 </resources>

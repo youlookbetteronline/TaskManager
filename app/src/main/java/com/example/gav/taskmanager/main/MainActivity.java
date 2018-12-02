@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.gav.taskmanager.R;
+import com.example.gav.taskmanager.features.productivity.ProductivityFragment;
 
 public class MainActivity extends AppCompatActivity implements ProductivityUpdateListener {
     private TabLayout tlTabs;
@@ -65,10 +66,8 @@ public class MainActivity extends AppCompatActivity implements ProductivityUpdat
     @Override
     public void onProductivityUpdate(int value) {
         TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
-        Fragment item = adapter.getItem(1);
-        FragmentActivity activity = (FragmentActivity) item.getContext();
-        //TextView tvDoneTasks = activity.findViewById(R.id.tvDoneTasks);
-        //tvDoneTasks.setText("500");
+        ProductivityFragment fragment = ((ProductivityFragment) adapter.getItem(1));
+        fragment.updateProductivity(value);
 
     }
 }

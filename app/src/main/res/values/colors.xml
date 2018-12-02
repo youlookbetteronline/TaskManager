@@ -11,5 +11,11 @@
     <color name="priority_text">#8a000000</color>
     <color name="default_color_priority">#f44336</color>
     <color name="pink_cancel">#ef4481</color>
+    <array name="priority_color_list">
+        <item>#fffdd735</item>
+        <item>#ff21897b</item>
+        <item>#ff2396f3</item>
+        <item>#fff44336</item>
+    </array>
 
 </resources>

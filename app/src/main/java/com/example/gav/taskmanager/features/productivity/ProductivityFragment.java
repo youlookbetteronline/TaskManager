@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,4 +50,17 @@ public class ProductivityFragment extends Fragment {
         tvDoneTasks.setText(getString(R.string.done_tasks) + " " + resultValue);
     }
 
+    public void updateProductivity(int value) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int month = calendar.get(Calendar.MONTH);
+        String key = getString(R.string.month_number) + " " + month;
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            SharedPreferences preferences = activity.getSharedPreferences(key, Context.MODE_PRIVATE);
+            int defaultValue = 0;
+            tvDoneTasks.setText(getString(R.string.done_tasks) + " " + value);
+        }
+
+    }
 }

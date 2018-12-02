@@ -34,6 +34,7 @@ public class NewTaskFragment extends Fragment {
     private ImageButton ibAddTask;
     private EditText etTitle;
     private Priority currentPriority;
+    private PriorityDialogFragment priorityDialogFragment;
 
     public static final String TAG = "NewTaskFragment";
 
@@ -76,7 +77,6 @@ public class NewTaskFragment extends Fragment {
                     if (activity != null) {
                         DatabaseHelper.getDatabase(activity).taskDao().insert(task);
                         activity.finish();
-
                     }
                 }
                 else
@@ -106,9 +106,11 @@ public class NewTaskFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Нажали на приоритет");
-                PriorityDialogFragment
-                        .newInstance()
-                        .show(getChildFragmentManager(), PriorityDialogFragment.TAG);
+                if (priorityDialogFragment == null)
+                    priorityDialogFragment =  PriorityDialogFragment.newInstance();
+
+                priorityDialogFragment.show(getChildFragmentManager(), PriorityDialogFragment.TAG);
+
             }
         });
     }
@@ -116,8 +118,7 @@ public class NewTaskFragment extends Fragment {
     private void addSpannable() {
         Spannable text = new SpannableString(tvPriority.getText().toString());
 
-        int i = new Random().nextInt(PriorityDialogFragment.PRIORITY_COLOR_LIST.length);
-        int color = PriorityDialogFragment.PRIORITY_COLOR_LIST[i];
+        int color = getResources().getColor(R.color.black);
         text.setSpan(new ForegroundColorSpan(color), 0, 1,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvPriority.setText(text);
     }

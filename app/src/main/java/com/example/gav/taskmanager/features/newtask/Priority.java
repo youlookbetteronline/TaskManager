@@ -1,8 +1,8 @@
 package com.example.gav.taskmanager.features.newtask;
 
 public class Priority {
-    private int color;
-    private String title;
+    private final int color;
+    private final String title;
 
     public Priority(int color, String title) {
         this.color = color;
@@ -13,15 +13,7 @@ public class Priority {
         return color;
     }
 
-    public void setColor(int color) {
-        this.color = color;
-    }
-
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 }

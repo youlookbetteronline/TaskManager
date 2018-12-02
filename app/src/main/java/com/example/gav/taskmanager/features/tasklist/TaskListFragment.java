@@ -22,6 +22,7 @@ import com.example.gav.taskmanager.features.newtask.NewTaskActivity;
 import com.example.gav.taskmanager.features.newtask.PriorityDialogFragment;
 import com.example.gav.taskmanager.database.DatabaseHelper;
 import com.example.gav.taskmanager.main.ProductivityUpdateListener;
+import com.example.gav.taskmanager.main.ResourcesHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -128,7 +129,7 @@ public class TaskListFragment extends Fragment {
             editor.commit();
 
             if (activity instanceof ProductivityUpdateListener) {
-                ((ProductivityUpdateListener) activity).onProductivityUpdate(50);
+                ((ProductivityUpdateListener) activity).onProductivityUpdate(value);
             }
         }
 
@@ -150,7 +151,7 @@ public class TaskListFragment extends Fragment {
     private ArrayList<Task> getTasks() {
         ArrayList<Task> result = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
-            int priority = PriorityDialogFragment.PRIORITY_COLOR_LIST[new Random().nextInt(PriorityDialogFragment.PRIORITY_COLOR_LIST.length)];
+            int priority = ResourcesHelper.getColorArray(getContext(), R.array.priority_color_list)[new Random().nextInt(ResourcesHelper.getColorArray(getContext(), R.array.priority_color_list).length)];
             result.add(new Task("Выполнить задание №" + i, priority));
         }
         return result;

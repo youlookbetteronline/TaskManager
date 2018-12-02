@@ -14,8 +14,9 @@ import java.util.HashMap;
 
 public class TabsFragmentAdapter extends FragmentPagerAdapter {
 
-    private HashMap<Integer, String> tabTitles = new HashMap<Integer, String>();
+    private final HashMap<Integer, String> tabTitles = new HashMap<Integer, String>();
     private Context context;
+    private ProductivityFragment productivityFragment;
 
     public TabsFragmentAdapter(FragmentManager fm, Context context) {
         super(fm);
@@ -34,7 +35,11 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
         Fragment result = null;
         switch (i) {
             case 0: result = TaskListFragment.newInstance(); break;
-            case 1: result = ProductivityFragment.newInstance(); break;
+            case 1:
+                if (productivityFragment == null) {
+                    productivityFragment = ProductivityFragment.newInstance();
+                }
+                result = productivityFragment; break;
             default: break;
         }
         return result;

@@ -2,6 +2,7 @@ package com.example.gav.taskmanager.features.newtask;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 
 import com.example.gav.taskmanager.R;
+import com.example.gav.taskmanager.main.ResourcesHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +27,6 @@ public class PriorityDialogFragment extends DialogFragment {
     TextView tvCancel;
 
     public static final String TAG = "PriorityDialogFragment";
-    public static final int SIMPLE_PRIORITY = 0xfffdd735;
-    public static final int IMPORTANT_PRIORITY = 0xff21897b;
-    public static final int VERY_IMPORTANT_PRIORITY = 0xff2396f3;
-    public static final int URGENT_PRIORITY = 0xfff44336;
-    public static final int[] PRIORITY_COLOR_LIST = new int[]{SIMPLE_PRIORITY, IMPORTANT_PRIORITY, VERY_IMPORTANT_PRIORITY, URGENT_PRIORITY};
-    public static final String[] PRIORITY_TITLE_LIST = new String[]{"Simple", "Important", "Very important", "Urgent"};
     private PriorityDialogListener priorityDialogListener;
 
     public static PriorityDialogFragment newInstance() {
@@ -82,9 +78,11 @@ public class PriorityDialogFragment extends DialogFragment {
     }
 
     private List<Priority> getPriorityList() {
+        String[] priorityTitleList = getResources().getStringArray(R.array.priority_title_list);
+        int[] priorityColorList = ResourcesHelper.getColorArray(getContext(), R.array.priority_color_list);
         List<Priority> result = new ArrayList<>();
-        for (int i = 0; i < PRIORITY_COLOR_LIST.length; i++) {
-            result.add(new Priority(PRIORITY_COLOR_LIST[i], PRIORITY_TITLE_LIST[i]));
+        for (int i = 0; i < priorityColorList.length; i++) {
+            result.add(new Priority(priorityColorList[i], priorityTitleList[i]));
         }
         return result;
     }
