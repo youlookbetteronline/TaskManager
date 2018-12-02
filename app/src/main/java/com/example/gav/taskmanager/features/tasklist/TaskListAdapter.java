@@ -1,4 +1,4 @@
-package com.example.gav.taskmanager.adapter;
+package com.example.gav.taskmanager.features.tasklist;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,18 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+
 import com.example.gav.taskmanager.R;
-import com.example.gav.taskmanager.pojo.Task;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskListViewHolder>{
-    public ArrayList<Task> taskList = new ArrayList<>();
+    public List<Task> taskList = new ArrayList<>();
     private final OnTaskClickListener listener;
     private final Context context;
 
-    public TaskListAdapter(Context context, ArrayList<Task> taskList, OnTaskClickListener listener) {
+    public TaskListAdapter(Context context, List<Task> taskList, OnTaskClickListener listener) {
         this.context = context;
         this.taskList = taskList;
         this.listener = listener;
@@ -50,14 +50,19 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         return taskList.size();
     }
 
-    public void setItems(Collection<Task> tasks) {
-        taskList.addAll(tasks);
+    public void setItems(List<Task> tasks) {
+        this.taskList = tasks;
         notifyDataSetChanged();
     }
 
     public void clearItems() {
         taskList.clear();
         notifyDataSetChanged();
+    }
+
+    public void removeItem(int i) {
+        this.taskList.remove(i);
+        notifyItemRemoved(i);
     }
 
     public class TaskListViewHolder extends RecyclerView.ViewHolder {

@@ -3,9 +3,17 @@
     <string name="title">Title</string>
     <string name="priority_text">\u2022 Priority</string>
     <string name="priority_marker">\u2022</string>
+    <string name="priority_title">Priority</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="productivity">Productivity</string>
     <string name="tasks">Tasks</string>
+    <string name="cancel">cancel</string>
+    <string name="month_number">Month:</string>
+    <string name="done_tasks">Done tasks:</string>
+    <string name="already_task_done">You have already done everything today.</string>
+    <string name="enjoy_free_time">Enjoy your free time.</string>
+    <string name="write_to_developer">Write to developer</string>
 </resources>

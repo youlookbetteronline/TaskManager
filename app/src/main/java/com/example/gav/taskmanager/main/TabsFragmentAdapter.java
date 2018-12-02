@@ -1,4 +1,4 @@
-package com.example.gav.taskmanager.adapter;
+package com.example.gav.taskmanager.main;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -7,17 +7,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.gav.taskmanager.R;
-import com.example.gav.taskmanager.fragment.ProductivityFragment;
-import com.example.gav.taskmanager.fragment.TaskListFragment;
+import com.example.gav.taskmanager.features.productivity.ProductivityFragment;
+import com.example.gav.taskmanager.features.tasklist.TaskListFragment;
 
 import java.util.HashMap;
 
-public class TaskListFragmentAdapter extends FragmentPagerAdapter {
+public class TabsFragmentAdapter extends FragmentPagerAdapter {
 
     private HashMap<Integer, String> tabTitles = new HashMap<Integer, String>();
     private Context context;
 
-    public TaskListFragmentAdapter(FragmentManager fm, Context context) {
+    public TabsFragmentAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.context = context;
 
