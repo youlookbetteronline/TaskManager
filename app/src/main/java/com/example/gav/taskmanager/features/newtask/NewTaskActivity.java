@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 
 import com.example.gav.taskmanager.R;
 
-public class NewTaskActivity extends AppCompatActivity implements PriorityDialogListener {
+public class NewTaskActivity extends AppCompatActivity implements PriorityDialogListener, InsertTaskListener {
 
     private FrameLayout flContainer;
     public static final String TAG = "NewTaskActivity";
@@ -33,7 +33,16 @@ public class NewTaskActivity extends AppCompatActivity implements PriorityDialog
     @Override
     public void onPriorityChosen(Priority priority) {
         NewTaskFragment newTaskFragment = (NewTaskFragment)getSupportFragmentManager().findFragmentByTag(NewTaskFragment.TAG);
-        newTaskFragment.onPriorityChosen(priority);
-        Log.d(TAG, "Приоритет пришел, значение - " + priority.getTitle());
+        if (newTaskFragment != null) {
+            newTaskFragment.onPriorityChosen(priority);
+            Log.d(TAG, "Приоритет пришел, значение - " + priority.getTitle());
+        }
+    }
+
+    @Override
+    public void onInsertTask() {
+        NewTaskFragment newTaskFragment = (NewTaskFragment)getSupportFragmentManager().findFragmentByTag(NewTaskFragment.TAG);
+        if (newTaskFragment != null)
+            newTaskFragment.onInsertTask();
     }
 }
