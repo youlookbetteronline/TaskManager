@@ -3,23 +3,25 @@ package com.example.gav.taskmanager.main;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.gav.taskmanager.R;
+import com.example.gav.taskmanager.features.newtask.NewTaskActivity;
 import com.example.gav.taskmanager.features.productivity.ProductivityFragment;
+import com.example.gav.taskmanager.features.tasklist.TaskListFragment;
 
-public class MainActivity extends AppCompatActivity implements ProductivityUpdateListener {
+public class MainActivity extends AppCompatActivity implements ProductivityUpdateListener, DeleteTaskListener {
     private TabLayout tlTabs;
     private ViewPager vpTabs;
     private Toolbar appToolbar;
-
+    private FloatingActionButton fabAddTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +34,20 @@ public class MainActivity extends AppCompatActivity implements ProductivityUpdat
         vpTabs = findViewById(R.id.vpTabs);
         tlTabs = findViewById(R.id.tlTabs);
         appToolbar = findViewById(R.id.appToolbar);
+        fabAddTask = findViewById(R.id.favAddTask);
 
         final TabsFragmentAdapter adapter = new TabsFragmentAdapter(getSupportFragmentManager(), this);
         vpTabs.setAdapter(adapter);
         tlTabs.setupWithViewPager(vpTabs);
 
         setSupportActionBar(appToolbar);
+
+        fabAddTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult( new Intent(MainActivity.this, NewTaskActivity.class), TaskListFragment.NEW_TASK_ACTIVITY);
+            }
+        });
     }
 
     @Override
@@ -68,6 +78,14 @@ public class MainActivity extends AppCompatActivity implements ProductivityUpdat
         TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
         ProductivityFragment fragment = ((ProductivityFragment) adapter.getItem(1));
         fragment.updateProductivity(value);
+    }
 
+    @Override
+    public void onDeleteTask(int index) {
+        TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
+        TaskListFragment taskListFragment = ((TaskListFragment) adapter.getItem(0));
+        if (taskListFragment != null) {
+            taskListFragment.onDeleteTask(index);
+        }
     }
 }

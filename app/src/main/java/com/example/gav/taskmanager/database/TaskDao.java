@@ -1,5 +1,6 @@
 package com.example.gav.taskmanager.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -12,7 +13,7 @@ import java.util.List;
 @Dao
 public interface TaskDao {
     @Query("SELECT * FROM Task")
-    List<Task> getAll();
+    LiveData<List<Task>> getAll();
 
     @Insert
     void insert(Task task);

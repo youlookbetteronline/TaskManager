@@ -1,13 +1,16 @@
 package com.example.gav.taskmanager.features.tasklist;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,23 +21,22 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.gav.taskmanager.R;
-import com.example.gav.taskmanager.features.newtask.NewTaskActivity;
-import com.example.gav.taskmanager.features.newtask.PriorityDialogFragment;
-import com.example.gav.taskmanager.database.DatabaseHelper;
 import com.example.gav.taskmanager.main.ProductivityUpdateListener;
-import com.example.gav.taskmanager.main.ResourcesHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
+import java.util.List;
+
 
 public class TaskListFragment extends Fragment {
 
     private RecyclerView rvTasks;
     private LinearLayout llEmptyTasks;
     private TaskListAdapter taskAdapter;
-    private FloatingActionButton fabAddTask;
+    private TaskListViewModel viewModel;
+
+    private SwipeRefreshLayout srRefreshTasks;
 
     public static final int NEW_TASK_ACTIVITY = 001;
 
@@ -55,11 +57,11 @@ public class TaskListFragment extends Fragment {
     private void initViews(View view) {
         rvTasks = view.findViewById(R.id.rvTasks);
         llEmptyTasks = view.findViewById(R.id.llEmptyTasks);
-        fabAddTask = view.findViewById(R.id.favAddTask);
+        srRefreshTasks = view.findViewById(R.id.srRefreshTasks);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvTasks.setLayoutManager(layoutManager);
-        taskAdapter = new TaskListAdapter(getContext(), getTasks(), new TaskListAdapter.OnTaskClickListener() {
+        taskAdapter = new TaskListAdapter(new ArrayList<Task>(), new TaskListAdapter.OnTaskClickListener() {
             @Override public void onTaskClick(int index) {
                 //Toast.makeText(MainActivity.this, "Item Clicked", Toast.LENGTH_LONG).show();
                 //RecyclerView.ViewHolder viewHolderForAdapterPosition = rvTasks.findViewHolderForAdapterPosition(index);
@@ -67,11 +69,30 @@ public class TaskListFragment extends Fragment {
             }
         });
         rvTasks.setAdapter(taskAdapter);
+
+        viewModel = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        loadTasksFromDb();
+
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvTasks.getContext(),
                 ((LinearLayoutManager) layoutManager).getOrientation());
         rvTasks.addItemDecoration(dividerItemDecoration);
-
+        showHideWhenScroll();
         swipeDelete();
+    }
+
+    private void showHideWhenScroll() {
+        final FloatingActionButton fab = getActivity().findViewById(R.id.favAddTask);
+        rvTasks.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {
+
+                    fab.hide();
+                }
+                else fab.show();
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
     private void checkVisibilityViews() {
@@ -98,11 +119,7 @@ public class TaskListFragment extends Fragment {
                 if (viewHolder instanceof TaskListAdapter.TaskListViewHolder) {
                     FragmentActivity activity = getActivity();
                     if (activity != null) {
-                        DatabaseHelper.getDatabase(activity).taskDao().delete(taskAdapter.taskList.get(viewHolder.getAdapterPosition()));
-                        taskAdapter.removeItem(viewHolder.getAdapterPosition());
-                        checkVisibilityViews();
-                        addToDone();
-
+                        viewModel.deleteTask(activity, taskAdapter.taskList.get(viewHolder.getAdapterPosition()), viewHolder.getAdapterPosition());
                     }
                 }
             }
@@ -136,34 +153,38 @@ public class TaskListFragment extends Fragment {
     }
 
     private void initListeners() {
-        fabAddTask.setOnClickListener(new View.OnClickListener() {
+        srRefreshTasks.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View v) {
-                FragmentActivity activity = getActivity();
-                if (activity != null) {
-                    activity.startActivityForResult( new Intent(activity, NewTaskActivity.class), NEW_TASK_ACTIVITY);
-                }
-
+            public void onRefresh() {
+                loadTasksFromDb();
             }
         });
-    }
-
-    private ArrayList<Task> getTasks() {
-        ArrayList<Task> result = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            int priority = ResourcesHelper.getColorArray(getContext(), R.array.priority_color_list)[new Random().nextInt(ResourcesHelper.getColorArray(getContext(), R.array.priority_color_list).length)];
-            result.add(new Task("Выполнить задание №" + i, priority));
-        }
-        return result;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        loadTasksFromDb();
+    }
+
+    private void loadTasksFromDb() {
         FragmentActivity activity = getActivity();
         if (activity != null) {
-            taskAdapter.setItems(DatabaseHelper.getDatabase(activity).taskDao().getAll());
+            viewModel.getTasks().observe(getActivity(), new Observer<List<Task>>() {
+                @Override
+                public void onChanged(@Nullable List<Task> tasks) {
+                    taskAdapter.setItems(tasks);
+                    checkVisibilityViews();
+                    srRefreshTasks.setRefreshing(false);
+                }
+            });
         }
+
+    }
+
+    public void onDeleteTask(int index) {
+        taskAdapter.removeItem(index);
         checkVisibilityViews();
+        addToDone();
     }
 }
