@@ -84,8 +84,21 @@ public class MainActivity extends AppCompatActivity implements ProductivityUpdat
     public void onDeleteTask(int index) {
         TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
         TaskListFragment taskListFragment = ((TaskListFragment) adapter.getItem(0));
+        ProductivityFragment productivityFragment = ((ProductivityFragment) adapter.getItem(1));
         if (taskListFragment != null) {
             taskListFragment.onDeleteTask(index);
         }
+
+    }
+
+    @Override
+    public void onDeleteTask() {
+        TabsFragmentAdapter adapter = (TabsFragmentAdapter) vpTabs.getAdapter();
+        ProductivityFragment productivityFragment = ((ProductivityFragment) adapter.getItem(1));
+
+        if (productivityFragment != null) {
+            productivityFragment.onDeleteTask();
+        }
+
     }
 }

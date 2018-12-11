@@ -34,7 +34,8 @@ public class TaskListFragment extends Fragment {
     private RecyclerView rvTasks;
     private LinearLayout llEmptyTasks;
     private TaskListAdapter taskAdapter;
-    private TaskListViewModel viewModel;
+    private TaskListViewModel taskListViewModel;
+    private FinishTasksViewModel finishTasksViewModel;
 
     private SwipeRefreshLayout srRefreshTasks;
 
@@ -70,7 +71,8 @@ public class TaskListFragment extends Fragment {
         });
         rvTasks.setAdapter(taskAdapter);
 
-        viewModel = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        taskListViewModel = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        finishTasksViewModel = ViewModelProviders.of(this).get(FinishTasksViewModel.class);
         loadTasksFromDb();
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvTasks.getContext(),
@@ -108,7 +110,6 @@ public class TaskListFragment extends Fragment {
 
     private void swipeDelete() {
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
                 return false;
@@ -119,7 +120,10 @@ public class TaskListFragment extends Fragment {
                 if (viewHolder instanceof TaskListAdapter.TaskListViewHolder) {
                     FragmentActivity activity = getActivity();
                     if (activity != null) {
-                        viewModel.deleteTask(activity, taskAdapter.taskList.get(viewHolder.getAdapterPosition()), viewHolder.getAdapterPosition());
+                        int currentDay = getCurrentDay();
+                        int countFinishTask = 1;
+                        taskListViewModel.deleteTask(activity, taskAdapter.taskList.get(viewHolder.getAdapterPosition()), viewHolder.getAdapterPosition());
+                        finishTasksViewModel.insertTask(activity, new FinishTask(currentDay,countFinishTask));
                     }
                 }
             }
@@ -127,14 +131,17 @@ public class TaskListFragment extends Fragment {
         new ItemTouchHelper(callback).attachToRecyclerView(rvTasks);
     }
 
+    private int getCurrentDay() {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        return c.get(Calendar.DAY_OF_WEEK);
+
+    }
+
     private void addToDone() {
         FragmentActivity activity = getActivity();
         if (activity != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            int month = calendar.get(Calendar.MONTH);
-
-            String key = getString(R.string.month_number) + " " + month;
+            String key = getString(R.string.done_tasks_count);
             SharedPreferences preferences = activity.getSharedPreferences(key, Context.MODE_PRIVATE);
             int defaultValue = 0;
             int value = preferences.getInt(key, defaultValue);
@@ -149,7 +156,6 @@ public class TaskListFragment extends Fragment {
                 ((ProductivityUpdateListener) activity).onProductivityUpdate(value);
             }
         }
-
     }
 
     private void initListeners() {
@@ -170,7 +176,7 @@ public class TaskListFragment extends Fragment {
     private void loadTasksFromDb() {
         FragmentActivity activity = getActivity();
         if (activity != null) {
-            viewModel.getTasks().observe(getActivity(), new Observer<List<Task>>() {
+            taskListViewModel.getTasks().observe(getActivity(), new Observer<List<Task>>() {
                 @Override
                 public void onChanged(@Nullable List<Task> tasks) {
                     taskAdapter.setItems(tasks);

@@ -22,6 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".features.newtask.NewTaskActivity"></activity>
+
     </application>
 
 </manifest>
