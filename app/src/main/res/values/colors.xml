@@ -11,6 +11,11 @@
     <color name="priority_text">#8a000000</color>
     <color name="default_color_priority">#f44336</color>
     <color name="pink_cancel">#ef4481</color>
+    <color name="chart_line_color">#993f51b5</color>
+    <color name="chart_background_color">#333f51b5</color>
+    <color name="dot_color">#653f51b5</color>
+    <color name="chart_line_vertical_color">#333f51b5</color>
+    <color name="chart_label_text_color">#99000000</color>
     <array name="priority_color_list">
         <item>#fffdd735</item>
         <item>#ff21897b</item>

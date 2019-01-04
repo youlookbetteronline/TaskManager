@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LineChartView">
+        <attr name="coordinates" format="reference" />
+        <attr name="chart_background_color" format="color" />
+        <attr name="line_color" format="color" />
+        <attr name="line_vertical_color" format="color" />
+        <attr name="dot_border_color" format="color" />
+        <attr name="dot_color" format="color" />
+        <attr name="dot_radius" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="DaysOfWeekView">
+        <attr name="labels" format="reference" />
+        <attr name="label_textSize" format="dimension" />
+        <attr name="label_textColor" format="color" />
+    </declare-styleable>
+</resources>

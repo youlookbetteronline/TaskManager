@@ -11,7 +11,7 @@
     <string name="productivity">Productivity</string>
     <string name="tasks">Tasks</string>
     <string name="cancel">cancel</string>
-    <string name="month_number">Month:</string>
+    <string name="done_tasks_count">doneTasksCount:</string>
     <string name="done_tasks">Done tasks:</string>
     <string name="already_task_done">You have already done everything today.</string>
     <string name="enjoy_free_time">Enjoy your free time.</string>
@@ -22,4 +22,22 @@
         <item>Very important</item>
         <item>Urgent</item>
     </string-array>
+    <string-array name="labels_chart">
+        <item>mo</item>
+        <item>tu</item>
+        <item>we</item>
+        <item>th</item>
+        <item>fr</item>
+        <item>sa</item>
+        <item>su</item>
+    </string-array>
+    <integer-array name="coordinates_chart">
+        <item>5</item>
+        <item>10</item>
+        <item>10</item>
+        <item>2</item>
+        <item>4</item>
+        <item>1</item>
+        <item>8</item>
+    </integer-array>
 </resources>

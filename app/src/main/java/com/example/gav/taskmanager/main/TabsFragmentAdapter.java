@@ -1,10 +1,10 @@
 package com.example.gav.taskmanager.main;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.example.gav.taskmanager.R;
 import com.example.gav.taskmanager.features.productivity.ProductivityFragment;
@@ -17,6 +17,7 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
     private final HashMap<Integer, String> tabTitles = new HashMap<Integer, String>();
     private Context context;
     private ProductivityFragment productivityFragment;
+    private TaskListFragment taskListFragment;
 
     public TabsFragmentAdapter(FragmentManager fm, Context context) {
         super(fm);
@@ -34,7 +35,11 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         Fragment result = null;
         switch (i) {
-            case 0: result = TaskListFragment.newInstance(); break;
+            case 0:
+                if (taskListFragment == null) {
+                    taskListFragment = TaskListFragment.newInstance();
+                }
+                result = taskListFragment; break;
             case 1:
                 if (productivityFragment == null) {
                     productivityFragment = ProductivityFragment.newInstance();

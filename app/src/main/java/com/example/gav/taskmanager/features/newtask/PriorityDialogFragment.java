@@ -1,20 +1,17 @@
 package com.example.gav.taskmanager.features.newtask;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 
 import com.example.gav.taskmanager.R;
 import com.example.gav.taskmanager.main.ResourcesHelper;
@@ -27,6 +24,8 @@ public class PriorityDialogFragment extends DialogFragment {
     TextView tvCancel;
 
     public static final String TAG = "PriorityDialogFragment";
+
+    @Nullable
     private PriorityDialogListener priorityDialogListener;
 
     public static PriorityDialogFragment newInstance() {
@@ -49,13 +48,17 @@ public class PriorityDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof Activity) {
-            if (context instanceof PriorityDialogListener) {
-                priorityDialogListener = (PriorityDialogListener) context;
-            } else {
-                throw new UnsupportedOperationException("Activity должно реализовать интерфейс PriorityDialogListener");
-            }
+        try {
+            priorityDialogListener = (PriorityDialogListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement PriorityDialogListener");
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        priorityDialogListener = null;
     }
 
     private void initViews(View view) {

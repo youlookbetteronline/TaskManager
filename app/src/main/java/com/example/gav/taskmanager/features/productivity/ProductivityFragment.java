@@ -1,13 +1,15 @@
 package com.example.gav.taskmanager.features.productivity;
 
 
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +17,18 @@ import android.widget.TextView;
 
 
 import com.example.gav.taskmanager.R;
+import com.example.gav.taskmanager.features.tasklist.FinishTask;
+import com.example.gav.taskmanager.features.tasklist.FinishTasksViewModel;
+import com.example.gav.taskmanager.views.LineChartView;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 
 public class ProductivityFragment extends Fragment {
     public static final String TAG = "ProductivityFragment";
-    TextView tvDoneTasks;
+    private TextView tvDoneTasks;
+    private LineChartView lcChart;
+    private FinishTasksViewModel finishTasksViewModel;
+
     public static ProductivityFragment newInstance() {
         ProductivityFragment fragment = new ProductivityFragment();
         return fragment;
@@ -38,23 +45,47 @@ public class ProductivityFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         tvDoneTasks = view.findViewById(R.id.tvDoneTasks);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        int month = calendar.get(Calendar.MONTH);
+        lcChart = view.findViewById(R.id.lcvChart);
 
-        String key = getString(R.string.month_number) + " " + month;
+        String key = getString(R.string.done_tasks_count);
 
         SharedPreferences preferences = getActivity().getSharedPreferences(key, Context.MODE_PRIVATE);
         int defaultValue = 0;
         int resultValue = preferences.getInt(key, defaultValue);
         tvDoneTasks.setText(getString(R.string.done_tasks) + " " + resultValue);
+
+        finishTasksViewModel = ViewModelProviders.of(this).get(FinishTasksViewModel.class);
+        loadFinishTasksFromDb();
+    }
+
+    private void loadFinishTasksFromDb() {
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            finishTasksViewModel.getFinishTasks().observe(getActivity(), new Observer<List<FinishTask>>() {
+                @Override
+                public void onChanged(@Nullable List<FinishTask> finishTasks) {
+                    int[] chartData = parseDataForChart(finishTasks);
+                    lcChart.setChartData(chartData);
+                }
+            });
+        }
+    }
+
+    private int[] parseDataForChart(List<FinishTask> finishTasks) {
+        int[] result = new int[7];
+        for (FinishTask finishTask : finishTasks) {
+            int finishTaskDay = finishTask.getDay();
+            int finishTaskCount = finishTask.getCount();
+            int resultIndex = finishTaskDay - 2;
+            if (resultIndex < 0)
+                resultIndex = 7 + resultIndex;
+            result[resultIndex] += finishTaskCount;
+        }
+        return result;
     }
 
     public void updateProductivity(int value) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        int month = calendar.get(Calendar.MONTH);
-        String key = getString(R.string.month_number) + " " + month;
+        String key = getString(R.string.done_tasks_count);
         FragmentActivity activity = getActivity();
         if (activity != null) {
             SharedPreferences preferences = activity.getSharedPreferences(key, Context.MODE_PRIVATE);

@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".main.MainActivity">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvTasks"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/task_item"
-        android:visibility="invisible"
-        tools:visibility="visible"/>
+        android:layout_height="wrap_content">
+
+    </com.google.android.material.appbar.AppBarLayout>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srRefreshTasks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTasks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/task_item"
+            android:visibility="invisible"
+            tools:visibility="visible"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
     <LinearLayout
         android:id="@+id/llEmptyTasks"
         android:layout_width="wrap_content"
@@ -44,14 +57,4 @@
 
         
     </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/favAddTask"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#ef4481"
-        android:src="@drawable/add_white"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp" />
-
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -17,11 +17,11 @@
                 <action
                     android:name="android.intent.action.MAIN"
                     android:screenOrientation="portrait"/>
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".features.newtask.NewTaskActivity"></activity>
+
     </application>
 
 </manifest>

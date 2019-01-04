@@ -3,16 +3,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.productivity.ProductivityFragment">
-    
-    <TextView
-        android:id="@+id/tvDoneTasks"
-        android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".features.productivity.ProductivityFragment"
+    android:orientation="vertical">
+
+
+    <com.example.gav.taskmanager.views.LineChartView
+        android:id="@+id/lcvChart"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="16dp"
+        app:coordinates="@array/coordinates_chart"/>
+
+    <com.example.gav.taskmanager.views.DaysOfWeekView
+        android:id="@+id/dowLabels"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
-        tools:text="Done tasks:"
-        android:layout_margin="16dp"
-        android:textColor="@color/black"/>
+        app:labels="@array/labels_chart"
+        app:label_textSize="12sp"
+        app:label_textColor="#99000000"
+        android:layout_marginTop="4dp"
+        android:paddingLeft="14dp"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#eeeeee"
+            android:layout_gravity="top"/>
+
+        <TextView
+            android:id="@+id/tvDoneTasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            tools:text="Done tasks:"
+            android:layout_marginLeft="24dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center_vertical"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#eeeeee"
+            android:layout_gravity="bottom"/>
+
+    </FrameLayout>
+
+
+
 
 
 </LinearLayout>

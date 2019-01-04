@@ -1,8 +1,7 @@
 package com.example.gav.taskmanager.features.tasklist;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +10,13 @@ import android.widget.TextView;
 
 import com.example.gav.taskmanager.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskListViewHolder>{
-    public List<Task> taskList = new ArrayList<>();
+    public List<Task> taskList;
     private final OnTaskClickListener listener;
-    private final Context context;
 
-    public TaskListAdapter(Context context, List<Task> taskList, OnTaskClickListener listener) {
-        this.context = context;
+    public TaskListAdapter(List<Task> taskList, OnTaskClickListener listener) {
         this.taskList = taskList;
         this.listener = listener;
     }
@@ -28,7 +24,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     @NonNull
     @Override
     public TaskListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(context).inflate(R.layout.task_item, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.task_item, viewGroup, false);
         final TaskListViewHolder taskListViewHolder = new TaskListViewHolder(view);
         taskListViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {

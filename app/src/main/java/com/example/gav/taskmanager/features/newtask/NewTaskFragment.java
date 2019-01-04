@@ -1,11 +1,12 @@
 package com.example.gav.taskmanager.features.newtask;
 
-
+import android.app.Activity;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -23,10 +24,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.gav.taskmanager.R;
-import com.example.gav.taskmanager.database.DatabaseHelper;
+import com.example.gav.taskmanager.database.AppDatabase;
 import com.example.gav.taskmanager.features.tasklist.Task;
+import com.example.gav.taskmanager.features.tasklist.TaskListViewModel;
+import com.example.gav.taskmanager.main.App;
 
-import java.util.Random;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class NewTaskFragment extends Fragment {
 
@@ -35,6 +41,9 @@ public class NewTaskFragment extends Fragment {
     private EditText etTitle;
     private Priority currentPriority;
     private PriorityDialogFragment priorityDialogFragment;
+
+    private TaskListViewModel viewModel;
+    private CompositeDisposable compositeDisposable;
 
     public static final String TAG = "NewTaskFragment";
 
@@ -62,6 +71,9 @@ public class NewTaskFragment extends Fragment {
         etTitle = view.findViewById(R.id.etTitle);
 
         ibAddTask.setEnabled(false);
+
+        viewModel = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        compositeDisposable = new CompositeDisposable();
     }
 
     private void initListeners() {
@@ -75,11 +87,11 @@ public class NewTaskFragment extends Fragment {
                     FragmentActivity activity = getActivity();
 
                     if (activity != null) {
-                        DatabaseHelper.getDatabase(activity).taskDao().insert(task);
-                        activity.finish();
+                        //viewModel.insertTask(activity, task);
+                        insertTaskViaRxJava(activity, task);
+
                     }
-                }
-                else
+                } else
                     Toast.makeText(getContext(), "Please, pick priority", Toast.LENGTH_SHORT).show();
 
             }
@@ -107,7 +119,7 @@ public class NewTaskFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "Нажали на приоритет");
                 if (priorityDialogFragment == null)
-                    priorityDialogFragment =  PriorityDialogFragment.newInstance();
+                    priorityDialogFragment = PriorityDialogFragment.newInstance();
 
                 priorityDialogFragment.show(getChildFragmentManager(), PriorityDialogFragment.TAG);
 
@@ -115,11 +127,22 @@ public class NewTaskFragment extends Fragment {
         });
     }
 
+    private void insertTaskViaRxJava(FragmentActivity activity, Task task) {
+        if (activity != null) {
+            final AppDatabase db = App.getApp(activity).getDatabase();
+            compositeDisposable.add(db.taskDao().insertReactively(task)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onInsertTask)
+            );
+        }
+    }
+
     private void addSpannable() {
         Spannable text = new SpannableString(tvPriority.getText().toString());
 
         int color = getResources().getColor(R.color.black);
-        text.setSpan(new ForegroundColorSpan(color), 0, 1,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new ForegroundColorSpan(color), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvPriority.setText(text);
     }
 
@@ -129,13 +152,25 @@ public class NewTaskFragment extends Fragment {
         changePriorityTextView();
     }
 
+    public void onInsertTask() {
+        Activity activity = getActivity();
+        if (activity != null)
+            activity.finish();
+    }
+
     private void changePriorityTextView() {
         if (currentPriority != null) {
             String text = getResources().getString(R.string.priority_marker) + " " + currentPriority.getTitle();
             Spannable spannable = new SpannableString(text);
-            spannable.setSpan(new ForegroundColorSpan(currentPriority.getColor()), 0, 1,  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ForegroundColorSpan(currentPriority.getColor()), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             tvPriority.setText(spannable);
 
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        compositeDisposable.clear();
     }
 }
