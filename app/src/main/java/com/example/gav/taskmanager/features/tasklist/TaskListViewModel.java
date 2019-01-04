@@ -1,15 +1,14 @@
 package com.example.gav.taskmanager.features.tasklist;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.gav.taskmanager.database.AppDatabase;
 import com.example.gav.taskmanager.features.newtask.InsertTaskListener;
-import com.example.gav.taskmanager.features.newtask.PriorityDialogListener;
 import com.example.gav.taskmanager.main.App;
 import com.example.gav.taskmanager.main.DeleteTaskListener;
 

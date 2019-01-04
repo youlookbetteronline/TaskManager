@@ -1,32 +1,39 @@
 package com.example.gav.taskmanager.features.tasklist;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.gav.taskmanager.R;
+import com.example.gav.taskmanager.database.AppDatabase;
+import com.example.gav.taskmanager.main.App;
 import com.example.gav.taskmanager.main.ProductivityUpdateListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class TaskListFragment extends Fragment {
@@ -38,6 +45,7 @@ public class TaskListFragment extends Fragment {
     private FinishTasksViewModel finishTasksViewModel;
 
     private SwipeRefreshLayout srRefreshTasks;
+    CompositeDisposable compositeDisposable;
 
     public static final int NEW_TASK_ACTIVITY = 001;
 
@@ -59,7 +67,7 @@ public class TaskListFragment extends Fragment {
         rvTasks = view.findViewById(R.id.rvTasks);
         llEmptyTasks = view.findViewById(R.id.llEmptyTasks);
         srRefreshTasks = view.findViewById(R.id.srRefreshTasks);
-
+        compositeDisposable = new CompositeDisposable();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvTasks.setLayoutManager(layoutManager);
         taskAdapter = new TaskListAdapter(new ArrayList<Task>(), new TaskListAdapter.OnTaskClickListener() {
@@ -73,7 +81,8 @@ public class TaskListFragment extends Fragment {
 
         taskListViewModel = ViewModelProviders.of(this).get(TaskListViewModel.class);
         finishTasksViewModel = ViewModelProviders.of(this).get(FinishTasksViewModel.class);
-        loadTasksFromDb();
+        //loadTasksFromDb();
+        loadTasksFromDbViaRxJava();
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvTasks.getContext(),
                 ((LinearLayoutManager) layoutManager).getOrientation());
@@ -122,13 +131,37 @@ public class TaskListFragment extends Fragment {
                     if (activity != null) {
                         int currentDay = getCurrentDay();
                         int countFinishTask = 1;
-                        taskListViewModel.deleteTask(activity, taskAdapter.taskList.get(viewHolder.getAdapterPosition()), viewHolder.getAdapterPosition());
-                        finishTasksViewModel.insertTask(activity, new FinishTask(currentDay,countFinishTask));
+                        //taskListViewModel.deleteTask(activity, taskAdapter.taskList.get(viewHolder.getAdapterPosition()), viewHolder.getAdapterPosition());
+                        //finishTasksViewModel.insertTask(activity, new FinishTask(currentDay,countFinishTask));
+                        deleteTaskViaRxJava(activity, taskAdapter.taskList.get(viewHolder.getAdapterPosition()), viewHolder.getAdapterPosition());
+                        insertFinishTaskViaRxJava(activity, new FinishTask(currentDay,countFinishTask));
                     }
                 }
             }
         };
         new ItemTouchHelper(callback).attachToRecyclerView(rvTasks);
+    }
+
+    private void deleteTaskViaRxJava(FragmentActivity activity, Task task, int adapterPosition) {
+        if (activity != null) {
+            final AppDatabase db = App.getApp(activity).getDatabase();
+            compositeDisposable.add(db.taskDao().deleteReactively(task)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(()->onDeleteTask(adapterPosition))
+            );
+        }
+    }
+
+    private void insertFinishTaskViaRxJava(FragmentActivity activity, FinishTask finishTask) {
+        if (activity != null) {
+            final AppDatabase db = App.getApp(activity).getDatabase();
+            compositeDisposable.add(db.finishTaskDao().insertReactively(finishTask)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+            );
+        }
     }
 
     private int getCurrentDay() {
@@ -159,31 +192,43 @@ public class TaskListFragment extends Fragment {
     }
 
     private void initListeners() {
-        srRefreshTasks.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadTasksFromDb();
-            }
-        });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadTasksFromDb();
+        srRefreshTasks.setOnRefreshListener(() -> loadTasksFromDbViaRxJava());
     }
 
     private void loadTasksFromDb() {
         FragmentActivity activity = getActivity();
         if (activity != null) {
-            taskListViewModel.getTasks().observe(getActivity(), new Observer<List<Task>>() {
+            taskListViewModel.getTasks().observe(this, tasks -> {
+                taskAdapter.setItems(tasks);
+                checkVisibilityViews();
+                srRefreshTasks.setRefreshing(false);
+            });
+        }
+
+    }
+
+    private void loadTasksFromDbViaRxJava() {
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+
+            final AppDatabase db = App.getApp(activity).getDatabase();
+            compositeDisposable.add(db.taskDao().getAllReactively()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(tasks -> {
+                    taskAdapter.setItems(tasks);
+                    checkVisibilityViews();
+                    srRefreshTasks.setRefreshing(false);
+                })
+            );
+            /*taskListViewModel.getTasks().observe(this, new Observer<List<Task>>() {
                 @Override
                 public void onChanged(@Nullable List<Task> tasks) {
                     taskAdapter.setItems(tasks);
                     checkVisibilityViews();
                     srRefreshTasks.setRefreshing(false);
                 }
-            });
+            });*/
         }
 
     }
@@ -192,5 +237,11 @@ public class TaskListFragment extends Fragment {
         taskAdapter.removeItem(index);
         checkVisibilityViews();
         addToDone();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        compositeDisposable.clear();
     }
 }

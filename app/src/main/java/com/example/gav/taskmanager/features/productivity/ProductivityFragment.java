@@ -1,15 +1,15 @@
 package com.example.gav.taskmanager.features.productivity;
 
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +21,6 @@ import com.example.gav.taskmanager.features.tasklist.FinishTask;
 import com.example.gav.taskmanager.features.tasklist.FinishTasksViewModel;
 import com.example.gav.taskmanager.views.LineChartView;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class ProductivityFragment extends Fragment {
@@ -78,9 +76,9 @@ public class ProductivityFragment extends Fragment {
         for (FinishTask finishTask : finishTasks) {
             int finishTaskDay = finishTask.getDay();
             int finishTaskCount = finishTask.getCount();
-            int resultIndex = finishTaskDay - 1;
+            int resultIndex = finishTaskDay - 2;
             if (resultIndex < 0)
-                resultIndex = 6;
+                resultIndex = 7 + resultIndex;
             result[resultIndex] += finishTaskCount;
         }
         return result;
@@ -95,9 +93,5 @@ public class ProductivityFragment extends Fragment {
             tvDoneTasks.setText(getString(R.string.done_tasks) + " " + value);
         }
 
-    }
-
-    public void onDeleteTask() {
-        loadFinishTasksFromDb();
     }
 }

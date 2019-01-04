@@ -1,12 +1,12 @@
 package com.example.gav.taskmanager.features.newtask;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -24,8 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.gav.taskmanager.R;
+import com.example.gav.taskmanager.database.AppDatabase;
 import com.example.gav.taskmanager.features.tasklist.Task;
 import com.example.gav.taskmanager.features.tasklist.TaskListViewModel;
+import com.example.gav.taskmanager.main.App;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class NewTaskFragment extends Fragment {
@@ -37,6 +43,7 @@ public class NewTaskFragment extends Fragment {
     private PriorityDialogFragment priorityDialogFragment;
 
     private TaskListViewModel viewModel;
+    private CompositeDisposable compositeDisposable;
 
     public static final String TAG = "NewTaskFragment";
 
@@ -66,6 +73,7 @@ public class NewTaskFragment extends Fragment {
         ibAddTask.setEnabled(false);
 
         viewModel = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        compositeDisposable = new CompositeDisposable();
     }
 
     private void initListeners() {
@@ -79,7 +87,8 @@ public class NewTaskFragment extends Fragment {
                     FragmentActivity activity = getActivity();
 
                     if (activity != null) {
-                        viewModel.insertTask(activity, task);
+                        //viewModel.insertTask(activity, task);
+                        insertTaskViaRxJava(activity, task);
 
                     }
                 } else
@@ -118,6 +127,17 @@ public class NewTaskFragment extends Fragment {
         });
     }
 
+    private void insertTaskViaRxJava(FragmentActivity activity, Task task) {
+        if (activity != null) {
+            final AppDatabase db = App.getApp(activity).getDatabase();
+            compositeDisposable.add(db.taskDao().insertReactively(task)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(activity::finish)
+            );
+        }
+    }
+
     private void addSpannable() {
         Spannable text = new SpannableString(tvPriority.getText().toString());
 
@@ -146,5 +166,11 @@ public class NewTaskFragment extends Fragment {
             tvPriority.setText(spannable);
 
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        compositeDisposable.clear();
     }
 }

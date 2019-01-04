@@ -105,8 +105,11 @@ public class LineChartView extends View {
         attributes.recycle();
     }
 
-    public void setChartData(int[] coordinates) {
-        this.coordinates = coordinates.clone();
+    public void setChartData(int[] coords) {
+        this.coordinates = new int[7];
+        for (int i = 0; i < coords.length; i++) {
+            this.coordinates[i] = coords[i];
+        }
         invalidate();
     }
     public void chartBackgroundColor(int chartBackgroundColor) {
@@ -175,28 +178,28 @@ public class LineChartView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        path.moveTo(getXPos(0), getYPos(coordinates[0]));
-        pathLine.moveTo(getXPos(0), getYPos(coordinates[0]));
+        path.reset();
+        pathLine.reset();
+        float startXPos = getXPos(0);
+        float startYPos = getYPos(coordinates[0]);
+        path.moveTo(startXPos, startYPos);
+        pathLine.moveTo(startXPos, startYPos);
         for (int i = 1; i < coordinates.length; i++) {
-            path.lineTo(getXPos(i), getYPos(coordinates[i]));
-            pathLine.lineTo(getXPos(i), getYPos(coordinates[i]));
+            float xPos = getXPos(i);
+            float yPos = getYPos(coordinates[i]);
+            float finishX = getXPos(i);
+            int finishY = getMeasuredHeight() - getPaddingBottom();
+            path.lineTo(xPos, yPos);
+            pathLine.lineTo(xPos, yPos);
+            canvas.drawLine(xPos, yPos, finishX, finishY, paintVerticalLines);
+
+            canvas.drawCircle(xPos, yPos - dotRadius, dotRadius + 1, paintExternalDot);
+            canvas.drawCircle(xPos, yPos - dotRadius, dotRadius, paintInternalDot);
         }
-        path.lineTo(getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
-        path.lineTo(getPaddingLeft(), getHeight() - getPaddingBottom());
+        path.lineTo(getWidth() - getPaddingRight(), getMeasuredHeight() - getPaddingBottom());
+        path.lineTo(getPaddingLeft(), getMeasuredHeight() - getPaddingBottom());
 
         canvas.drawPath(path, paintPath);
-
-        for (int p = 0; p < coordinates.length; p++) {
-            float startX = getXPos(p);
-            float startY = getYPos(coordinates[p]);
-            float finishX = getXPos(p);
-            int finishY = getHeight() - getPaddingBottom();
-            canvas.drawLine(startX, startY, finishX, finishY, paintVerticalLines);
-
-            canvas.drawCircle(startX, startY - dotRadius, dotRadius + 1, paintExternalDot);
-            canvas.drawCircle(startX, startY - dotRadius, dotRadius, paintInternalDot);
-        }
-
         canvas.drawPath(pathLine, paintPathLine);
         canvas.save();
         canvas.scale(scaleFactor, scaleFactor);

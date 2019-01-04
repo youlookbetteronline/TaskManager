@@ -1,7 +1,7 @@
 package com.example.gav.taskmanager.database;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.RoomDatabase;
+import androidx.room.Database;
+import androidx.room.RoomDatabase;
 
 import com.example.gav.taskmanager.features.tasklist.FinishTask;
 import com.example.gav.taskmanager.features.tasklist.Task;

@@ -1,11 +1,13 @@
 package com.example.gav.taskmanager.database;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.Query;
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
+import io.reactivex.Completable;
 
 import com.example.gav.taskmanager.features.tasklist.FinishTask;
+import com.example.gav.taskmanager.features.tasklist.Task;
 
 import java.util.List;
 
@@ -17,5 +19,8 @@ public interface FinishTaskDao {
 
     @Insert
     void insert(FinishTask finishTask);
+
+    @Insert
+    Completable insertReactively(FinishTask...finishTask);
 
 }

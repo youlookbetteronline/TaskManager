@@ -1,7 +1,7 @@
 package com.example.gav.taskmanager.database;
 
 import android.app.Activity;
-import android.arch.persistence.room.Room;
+import androidx.room.Room;
 
 public class DatabaseHelper {
     public static AppDatabase getDatabase(Activity activity) {
