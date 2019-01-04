@@ -27,6 +27,7 @@ import com.example.gav.taskmanager.main.ProductivityUpdateListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class TaskListFragment extends Fragment {
         compositeDisposable = new CompositeDisposable();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvTasks.setLayoutManager(layoutManager);
-        taskAdapter = new TaskListAdapter(new ArrayList<Task>(), new TaskListAdapter.OnTaskClickListener() {
+        taskAdapter = new TaskListAdapter(Collections.emptyList(), new TaskListAdapter.OnTaskClickListener() {
             @Override public void onTaskClick(int index) {
                 //Toast.makeText(MainActivity.this, "Item Clicked", Toast.LENGTH_LONG).show();
                 //RecyclerView.ViewHolder viewHolderForAdapterPosition = rvTasks.findViewHolderForAdapterPosition(index);
@@ -240,8 +241,9 @@ public class TaskListFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         compositeDisposable.clear();
     }
+
 }

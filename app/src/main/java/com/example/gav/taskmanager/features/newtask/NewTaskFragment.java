@@ -133,7 +133,7 @@ public class NewTaskFragment extends Fragment {
             compositeDisposable.add(db.taskDao().insertReactively(task)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(activity::finish)
+                .subscribe(this::onInsertTask)
             );
         }
     }
